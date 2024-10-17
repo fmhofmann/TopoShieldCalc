@@ -29,3 +29,4 @@ Make sure that the `terra` and `readODS`packages are installed.
 ```
 library(TopoShieldCalc)
 ```
+Now you should be able to use the package.
