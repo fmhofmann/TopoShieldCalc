@@ -1,0 +1,11 @@
+Package: TopoShieldCalc
+Type: Package
+Title: Topographic shielding calculation with the aid of a digital elevation model
+Version: 1.0
+Date: 2024_10-11
+Language: en-UK
+Maintainer: Felix Martin Hofmann <fmhofmann9892@gmail.com>
+Description: TEXT
+URL: TEXT
+Authors@R: person("Felix Martin", "Hofmann", role = "aut", email = "fmhofmann9892@gmail.com", comment = c(ORCID = "0000-0002-9882-2613"))
+RoxygenNote: 7.3.2
