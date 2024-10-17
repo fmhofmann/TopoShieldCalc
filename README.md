@@ -23,3 +23,9 @@ library(devtools)
 install_github("fmhofmann/TopoShieldCalc")
 ```
 Make sure that the `terra` and `readODS`packages are installed. 
+
+4. Put the package into the library
+ 
+```
+library(TopoShieldCalc)
+```
