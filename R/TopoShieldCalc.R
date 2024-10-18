@@ -293,6 +293,9 @@ azimuth_elevation = function(radius, # Numeric. The maximum distance from the sa
                              point_x, # Numeric. The x-coordinate of the sampling site
                              point_y, # Numeric. The x-coordinate of the sampling site
                              plot = FALSE){ # Logical. Enable plotting. Default to FALSE.
+  resolution_dem = terra::res(raster_elev)[1] # Determine the xy-resolution of the DEM
+  number_points = floor(radius / resolution_dem) # Determine the number of points (distance between the points: resolution_dem)
+  radius_2 = number_points * resolution_dem # Maximum distance from the sampling site (should be roughly equal to radius) 
   azimuth = 1 # Start with azimuth = 1
   for (i in 1:360){
     if (azimuth >= 90){ # Convert the azimuth
@@ -300,56 +303,48 @@ azimuth_elevation = function(radius, # Numeric. The maximum distance from the sa
     } else {
       azimuth_2 = 90 - azimuth
     }
-    resolution_dem = terra::res(raster_elev)[1]
-    number_points = floor(radius / resolution_dem) # Determine the number of points (distance between the points = resolution_dem)
-    radius_2 = number_points * resolution_dem # Maximum distance from the sampling site (should be roughly equal to radius) 
     pointmaxdist_x = radius_2 * cos(azimuth_2 * pi / 180) + point_x # Determine the x-coordinate of the point situated at the maximum distance apart from the observer point 
     pointmaxdist_y = radius_2 * sin(azimuth_2 * pi / 180) + point_y # Determine the y-coordinate of the point situated at the maximum distance apart from the observer point
     coord_point_x = seq.int(from = point_x, to = pointmaxdist_x, length.out = number_points) # Create x-coordinates of points between the observer point and the point at the maximum distance around the observer point)
     coord_point_y = seq.int(from = point_y, to = pointmaxdist_y, length.out = number_points) # Create y-coordinates of points between the observer point and the point at the maximum distance around the observer point)
-    points = cbind(coord_point_x, # Combine the x- and y-coordinates
-                   coord_point_y)
-    points = terra::vect(points) # Convert the coordinates into a SpatVect
+    coord = data.frame(coord_point_x, coord_point_y) # Put the xy-coordinates of the points in a dataframe
     extract = terra::extract(raster_elev,
-                             points,
+                             coord,
                              method = "bilinear",
                              na.rm = FALSE,
                              xy = TRUE,
                              ID = FALSE)
     max_elevation = max(extract[1]) # Extract the maximum elevation at the points
     index = which(extract$lyr.1 == max_elevation) # Retrieve the index number of the point with the maximum elevation angle
-    if (length(index) > 1){ # If multiple cells contain max_elevation
+    if (length(index) > 1){ # If multiple cells contain max_elevation (unlikely but theoretically possible)
       index = index[1]
     } else {}
     max_elevation_x = extract$x[as.numeric(index)] # Determine the x-coordinate of the cell with the maximum elevation angle
     max_elevation_y = extract$y[as.numeric(index)] # Determine the y-coordinate of the cell with the maximum elevation angle
     if (i == 1){ # During the first iteration...
       elevation = max_elevation
-      skyline_x = max_elevation_x
-      skyline_y = max_elevation_y
+      skyline_x = extract$x[as.numeric(index)] # Determine the x-coordinate of the cell with the maximum elevation angle
+      skyline_y = extract$y[as.numeric(index)] # Determine the y-coordinate of the cell with the maximum elevation angle
       azimuth = azimuth + 1 # Move to the next azimuth
     } else { # During all subsequent iterations
-      if ( i < 360){
-        elevation = append(elevation,max_elevation)
-        skyline_x = append(skyline_x,max_elevation_x)
-        skyline_y = append(skyline_y,max_elevation_y)
+      elevation = append(elevation, max_elevation)
+      skyline_x = append(skyline_x, extract$x[as.numeric(index)])
+      skyline_y = append(skyline_y, extract$y[as.numeric(index)])
+      if (i < 360){ # If this is not the last iteration...
         azimuth = azimuth + 1 # Move to the next azimuth
-      } else { # During the last iteration...
-        elevation = append(elevation,max_elevation)
-        skyline_x = append(skyline_x,max_elevation_x)
-        skyline_y = append(skyline_y,max_elevation_y)
-        skyline_coordinates = cbind(id=1, part=1, skyline_x, skyline_y)
+      } else { # If i == 360...
+        skyline_coordinates = cbind(id = 1, part = 1, skyline_x, skyline_y)
         skyline = terra::vect(skyline_coordinates, # Create a SpatVector with the skyline (polygon)
-                              type="polygons", 
-                              crs=terra::crs(raster_elev))
+                              type = "polygons", 
+                              crs = terra::crs(raster_elev))
+        terra::writeVector(skyline, # Export the skyline as ESRI shapefile
+                           filename = paste(point$Name,"_skyline.shp",sep=""),
+                           filetype = "ESRI Shapefile",
+                           overwrite = TRUE)
         if(plot == TRUE){
           terra::plot(raster_elev)
           terra::polys(skyline, col = NA, border = "red") # Visualise the results
         } else {}
-        terra::writeVector(skyline,
-                           filename = paste(point$Name,"_skyline.shp",sep=""),
-                           filetype = "ESRI Shapefile",
-                           overwrite = TRUE)
       }
     }
   }
