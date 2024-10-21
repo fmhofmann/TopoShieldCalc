@@ -79,7 +79,7 @@ load_geodata = function(radius = 10000){
 #' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com})
 #' @export
 point_xyz = function(dem, # SpatRaster. The cropped DEM
-                     point, # SpatVect. Sampling sites
+                     point, # SpatVect. Sampling site
                      boulder_height){ # Numeric. Boulder height in m
   point_x = terra::geom(point, df = TRUE)
   point_x = point_x$x
@@ -97,6 +97,7 @@ point_xyz = function(dem, # SpatRaster. The cropped DEM
 #' 
 #' This function allows for obtaining 360 pairs of azimuth and the corresponding elevation angles with the aid of a shapefile and a digital elevation model (loaded with [TopoShieldCalc::load_geodata]).
 #' @param dem The DEM (object of class "SpatRaster", see [terra::SpatRaster] for further details).
+#' @param point Shapefile of the sampling site (object of class "SpatVect, see [terra::SpatVector]).
 #' @param point_x Numeric. The \emph{x}-coordinate of the sampling site.
 #' @param point_y Numeric. The \emph{y}-coordinate of the sampling site.
 #' @param point_z Numeric. The \emph{z}-coordinate of the sampling site.
@@ -121,14 +122,24 @@ point_xyz = function(dem, # SpatRaster. The cropped DEM
 #' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com})
 #' @export
 azimuth_elevation_horizon = function(dem,
+                                     point,
                                      point_x,
                                      point_y,
                                      point_z,
                                      radius = 10000,
                                      plot = FALSE){
-  resolution_raster = terra::res(dem)[1] # Determine the xy-resolution of the DEM
+  geom = terra::geom(point) # Get the x- and y-coordinate of the sampling site
+  mask = terra::ext(geom[3] - radius - 200, 
+                    geom[3] + radius + 200,
+                    geom[4] - radius - 200,
+                    geom[4] + radius + 200) # Create a mask 
+  
+  dem_2 = terra::crop(dem,
+                      mask,
+                      touches = TRUE) # Crop dem
+  resolution_raster = terra::res(dem_2)[1] # Determine the xy-resolution of the DEM
   number_points = floor(radius / resolution_raster) + 1 # Determine the number of points (distance between the points: resolution_raster)
-  radius_2 = number_points * resolution_raster # Maximum distance from the sampling site (should be roughly equal to radius)
+  radius_2 = number_points * resolution_raster - 1 # Maximum distance from the sampling site (should be roughly equal to radius)
   azimuth = 1 # Begin with azimuth = 1
   for (i in 1:360){
     if (azimuth >= 90){ # Convert the azimuth
@@ -144,7 +155,7 @@ azimuth_elevation_horizon = function(dem,
     coord_point_y = seq.int(from = point_y, 
                             to = pointmaxdist_y, 
                             length.out = number_points) # Create y-coordinates of points between the observer point and the point at the maximum distance around the observer point)
-    extract = terra::extract(dem, 
+    extract = terra::extract(dem_2, 
                              data.frame(coord_point_x, coord_point_y), 
                              method = "bilinear", 
                              xy = TRUE, 
@@ -176,13 +187,13 @@ azimuth_elevation_horizon = function(dem,
         skyline_coordinates = cbind(id = 1, part = 1, skyline_x, skyline_y)
         skyline = terra::vect(skyline_coordinates, # Create a SpatVector with the skyline (polygon)
                               type = "polygons", 
-                              crs = terra::crs(dem))
+                              crs = terra::crs(dem_2))
         terra::writeVector(skyline, # Export the skyline as ESRI shapefile
                            filename = paste(point$Name,"_skyline.shp",sep=""),
                            filetype = "ESRI Shapefile",
                            overwrite = TRUE)
         if(plot == TRUE){
-          terra::plot(dem)
+          terra::plot(dem_2)
           terra::polys(skyline, col = NA, border = "red") # Visualise the results
         } else {}
       }
@@ -220,7 +231,7 @@ self_shield = function(strike, # Numeric. Strike of the sampling surface
                           by = pi / 180)
     dip_radians = (dip / 360) * (2 * pi) # Convert dip to radians
     strike_radians = (strike / 360) * (2 * pi) # Convert strike to radians
-    a = azimuth_radians - (strike_radians - (pi / 2)) # updip direction = strike direction - pi/2 by convention
+    a = azimuth_radians - (strike_radians - (pi / 2)) # updip direction equals strike direction - pi/2 by convention
     elevation_radians = atan(tan(dip_radians) * cos(a))
     elevation_radians = replace(elevation_radians, # Replace all values < 0 with 0
                                 elevation_radians < 0,
