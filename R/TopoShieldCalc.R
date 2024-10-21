@@ -166,7 +166,6 @@ azimuth_elevation_horizon = function(dem,
                           byrow = FALSE,
                           ncol = 360,
                           nrow = length(radius_2))
-  matrix_y_coord = 
   elevation_values = NA
   elevation = NA
   skyline_x = NA
