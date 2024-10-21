@@ -343,6 +343,7 @@ TopoShieldFact = function(radius = 10000){ # Numeric. Radius around the point.
               point = point,
               boulder_height = point$BouldHt) # Determine x-, y-, and z-coordinates
     azimuth_elevation_horizon(dem = dem,
+                              point = point,
                               point_x = point_x,
                               point_y = point_y,
                               point_z = point_z,
