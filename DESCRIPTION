@@ -7,7 +7,8 @@ Language: en-UK
 Imports: terra, readODS
 Description: This R package allows for calculating topographic shielding factors for discrete sampling sites with the aid of a digital elevation model (DEM). Both a shapefile (.shp) and a DEM (.tif) are required to compute shielding factors. This package involves funtions of the terra and the readODS packages which need to be installed prior to shielding factor calculation.
 URL: https://github.com/fmhofmann/TopoShieldCalc
-Authors@R: person("Felix Martin", "Hofmann", role = c("aut", "cre"), email = "fmhofmann9892@gmail.com", comment = c(ORCID = "0000-0002-9882-2613"))
+Authors@R: c(person("Felix Martin", "Hofmann", role = c("aut", "cre"), email = "fmhofmann9892@gmail.com", comment = c(ORCID = "0000-0002-9882-2613")),
+person ("Stefan","Hergarten", role = "aut", email = "stefan.hergarten@geologie.uni-freiburg.de", comment = c(ORCID = "0000-0002-4780-284X"))
 License: CC BY-NC 4.0
 RoxygenNote: 7.3.2
 Encoding: UTF-8

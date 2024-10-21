@@ -33,7 +33,7 @@
 #' For this step, the [terra::rast()] and [terra::vect()] commands are used, respectively.
 #' @examples 
 #' load_geodata(radius = 10000)
-#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com})
+#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 #' @export
 load_geodata = function(radius = 10000){ 
   message("Select the shapefile")
@@ -76,7 +76,7 @@ load_geodata = function(radius = 10000){
 #' The \emph{x}-, \emph{y}-, and \emph{z}-coordinates of the sampling site (vectors) are finally added to the global environment (point_x, point_y, and point_z, respectively).
 #' @examples 
 #' point_xyz(dem, point, boulder_height = 0.3)
-#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com})
+#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 #' @export
 point_xyz = function(dem, # SpatRaster. The cropped DEM
                      point, # SpatVect. Sampling site
@@ -119,7 +119,7 @@ point_xyz = function(dem, # SpatRaster. The cropped DEM
 #' Note that the exported shapefile is an "ESRI shapefile" which can be opened with geographic information system (GIS) software, such as QGIS.
 #' @examples 
 #' point_xyz(dem, point_x = 414416.5, point_y = 5316445.8, point_z = 279, radius = 10000, plot = TRUE)
-#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com})
+#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 #' @export
 azimuth_elevation_horizon = function(dem,
                                      point,
@@ -128,79 +128,63 @@ azimuth_elevation_horizon = function(dem,
                                      point_z,
                                      radius = 10000,
                                      plot = FALSE){
-  geom = terra::geom(point) # Get the x- and y-coordinate of the sampling site
-  mask = terra::ext(geom[3] - radius - 200, 
-                    geom[3] + radius + 200,
-                    geom[4] - radius - 200,
-                    geom[4] + radius + 200) # Create a mask 
+  mask = terra::ext(point_x - (radius + 200), 
+                    point_x + (radius + 200),
+                    point_y - (radius + 200),
+                    point_y + (radius + 200)) # Create a mask 
   dem_2 = terra::crop(dem,
                       mask,
                       touches = TRUE) # Crop dem
   resolution_raster = terra::res(dem_2)[1] # Determine the xy-resolution of the DEM
-  number_points = floor(radius / resolution_raster) + 1 # Determine the number of points (distance between the points: resolution_raster)
-  radius_2 = number_points * resolution_raster - 1 # Maximum distance from the sampling site (should be roughly equal to radius)
-  azimuth = 1 # Begin with azimuth = 1
-  for (i in 1:360){
-    if (azimuth >= 90){ # Convert the azimuth
-      azimuth_2 = 360 - abs(azimuth - 90)
+  radius_2 = seq(from = resolution_raster, 
+                 to = radius, 
+                 by = resolution_raster)
+  for (azimuth in 1:360){
+    if (azimuth == 1){
+      coord_x = radius_2 * sin(azimuth * 2 * pi / 360) + point_x
+      coord_y = radius_2 * sin(azimuth * 2 * pi / 360) + point_y
     } else {
-      azimuth_2 = 90 - azimuth
-    }
-    pointmaxdist_x = radius_2 * cos(azimuth_2 * pi / 180) + point_x # Determine the x-coordinate of the point situated at the maximum distance apart from the observer point 
-    pointmaxdist_y = radius_2 * sin(azimuth_2 * pi / 180) + point_y # Determine the y-coordinate of the point situated at the maximum distance apart from the observer point
-    coord_point_x = seq.int(from = point_x, 
-                            to = pointmaxdist_x, 
-                            length.out = number_points) # Create x-coordinates of points between the observer point and the point at the maximum distance around the observer point)
-    coord_point_y = seq.int(from = point_y, 
-                            to = pointmaxdist_y, 
-                            length.out = number_points) # Create y-coordinates of points between the observer point and the point at the maximum distance around the observer point)
-    extract = terra::extract(dem_2, 
-                             data.frame(coord_point_x, coord_point_y), 
-                             method = "bilinear", 
-                             xy = TRUE, 
-                             ID = FALSE)
-    x = extract$x
-    y = extract$y
-    z = extract[,1]
-    slope = (z - point_z) / sqrt((x - point_x)^2 + (y - point_y)^2) # Slope is defined as: change in elevation / distance
-    elevation_angle = atan(slope) * 180 / pi # Compute the elevation angle
-    max_elevation = max(elevation_angle) # Extract the maximum elevation at the points
-    index = which(elevation_angle == max_elevation) # Retrieve the index number of the point with the maximum elevation angle
-    if (length(index) > 1){ # If multiple cells contain max_elevation (unlikely but theoretically possible)
-      index = index[1]
-    } else {}
-    max_elevation_x = extract$x[as.numeric(index)] # Determine the x-coordinate of the cell with the maximum elevation angle
-    max_elevation_y = extract$y[as.numeric(index)] # Determine the y-coordinate of the cell with the maximum elevation angle
-    if (i == 1){ # During the first iteration...
-      elevation = max_elevation
-      skyline_x = extract$x[as.numeric(index)] # Determine the x-coordinate of the cell with the maximum elevation angle
-      skyline_y = extract$y[as.numeric(index)] # Determine the y-coordinate of the cell with the maximum elevation angle
-      azimuth = azimuth + 1 # Move to the next azimuth
-    } else { # During all subsequent iterations
-      elevation = append(elevation, max_elevation)
-      skyline_x = append(skyline_x, extract$x[as.numeric(index)])
-      skyline_y = append(skyline_y, extract$y[as.numeric(index)])
-      if (i < 360){ # If this is not the last iteration...
-        azimuth = azimuth + 1 # Move to the next azimuth
-      } else { # If i == 360...
-        skyline_coordinates = cbind(id = 1, part = 1, skyline_x, skyline_y)
-        skyline = terra::vect(skyline_coordinates, # Create a SpatVector with the skyline (polygon)
-                              type = "polygons", 
-                              crs = terra::crs(dem_2))
-        terra::writeVector(skyline, # Export the skyline as ESRI shapefile
-                           filename = paste(point$Name,"_skyline.shp",sep=""),
-                           filetype = "ESRI Shapefile",
-                           overwrite = TRUE)
-        if(plot == TRUE){
-          terra::plot(dem_2)
-          terra::polys(skyline, col = NA, border = "red") # Visualise the results
-        } else {}
-      }
+      coord_x = append(coord_x, radius_2 * sin(azimuth * 2 * pi / 360) + point_x)
+      coord_y = append(coord_y, radius_2 * sin(azimuth * 2 * pi / 360) + point_x)
     }
   }
-  elevation = replace(elevation, # If present, replace elevation < 0 by 0
-                      elevation < 0,
-                      0)
+  coord_z = terra::extract(dem_2, 
+                           data.frame(coord_x, coord_y), 
+                           method = "bilinear", 
+                           xy = TRUE,
+                           ID = FALSE)
+  slope = (coord_z[,1] - point_z) / sqrt((coord_x - point_x)^2 + (coord_y - point_y)^2) # Slope is defined as: change in elevation / distance
+  elevation = NA
+  skyline_x = NA
+  skyline_y = NA
+  index = NA
+  azimuth = 1
+  for (azimuth in 1:360){
+    if (azimuth == 1){
+      slope_max = which.max(slope[azimuth: azimuth + radius]) 
+      elevation[azimuth] = (atan(slope[index])) / pi * 180
+      skyline_x[azimuth] = coord_x[index]
+      skyline_y[azimuth] = coord_y[index]
+      index = 10000 
+    } else {
+      slope_max = which.max(slope[index + azimuth:index + radius]) 
+      elevation[azimuth] = (atan(slope[index])) / pi * 180
+      skyline_x[azimuth] = coord_x[index]
+      skyline_y[azimuth] = coord_y[index]
+      index = index + radius
+    }
+  }
+  skyline = terra::vect(cbind(id = 1, part = 1, skyline_x, skyline_y), # Create a SpatVector with the skyline (polygon)
+                        type = "polygons", 
+                        crs = terra::crs(dem_2))
+  terra::writeVector(skyline, # Export the skyline as ESRI shapefile
+                     filename = paste(point$Name,"_skyline.shp",sep=""),
+                     filetype = "ESRI Shapefile",
+                     overwrite = TRUE)
+  if(plot == TRUE){
+    terra::plot(dem_2)
+    terra::polys(skyline, col = NA, border = "red") # Visualise the results
+  }
   list = list(elevation = elevation)
   return(list2env(list, envir = globalenv())) # Return the vectors to the global environment
 }
@@ -216,7 +200,7 @@ azimuth_elevation_horizon = function(dem,
 #' It adds two vectors to the global environment: self_shielding_azimuth and self_shielding_elevation, containing the azimuth in degrees from north and the corresponding elevation angle in degrees, respectively.
 #' @examples 
 #' self_shield(strike = 20, dip = 40, plot = TRUE)
-#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com})
+#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com} and Stefan Hergarten, University of Freiburg)
 #' @export
 self_shield = function(strike, # Numeric. Strike of the sampling surface
                        dip, # Numeric. Dip of the sampling surface
@@ -236,18 +220,16 @@ self_shield = function(strike, # Numeric. Strike of the sampling surface
                                 elevation_radians < 0,
                                 0)
     self_shielding_elevation =  elevation_radians * (180 / pi)
-    self_shielding_azimuth = 1:360
   }
   if(plot == TRUE){
-    plot(self_shielding_azimuth,
+    plot(1:360,
          self_shielding_elevation,
          type = "l",
          col = "red",
          xlab = "Azimuth (degrees from North)",
          ylab = "Elevation (degrees)")
   } else {}
-  list = list(self_shielding_azimuth = self_shielding_azimuth,
-              self_shielding_elevation = self_shielding_elevation)
+  list = list(self_shielding_elevation = self_shielding_elevation)
   return(list2env(list, envir = globalenv())) # Return the vectors to the global environment
 }
 
@@ -263,7 +245,7 @@ self_shield = function(strike, # Numeric. Strike of the sampling surface
 #' The unitless shielding factor is calculated in the same way as in Greg Balco's topographic shielding calculator.
 #' @examples 
 #' shielding_factor(self_shielding_elevation = self_shielding_elevation, elevation  = elevation)
-#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com})
+#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 #' @export
 shielding_factor = function(point, 
                             self_shielding_elevation,
@@ -334,7 +316,7 @@ shielding_factor = function(point,
 #' This spreadsheet contains to columns entitled "Sampling site" and "Topographic shielding factor". 
 #' @examples 
 #' TopoShieldFact(radius = 10000)
-#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com})
+#' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 #' @export
 TopoShieldFact = function(radius = 10000){ # Numeric. Radius around the point.
   load_geodata(radius = radius) # Load the DEM and the shapefile
