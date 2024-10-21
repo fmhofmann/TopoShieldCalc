@@ -10,7 +10,7 @@ TopoShieldFact(radius = 10000)
 \item{radius}{Numeric. The radius around the sampling site (in metres) relevant for shielding factor calculation. Default to 10000 m.}
 }
 \description{
-This function allows for calculating topographic shielding factors for one or multiple sampling sites.
+This function allows for calculating topographic shielding factors for a sampling site.
 }
 \details{
 This function requires a shapefile (.shp) with the sampling sites and a digital elevation model (DEM; .tif)
