@@ -7,7 +7,9 @@
 shielding_factor(self_shielding_elevation, elevation)
 }
 \arguments{
-\item{radius}{The radius (metres) of the area around the sampling site relevant for shielding factor calculation.}
+\item{self_shielding_elevation}{A vector with elevation angles for each azimuth (1:360). Can be generated with \link{self_shield}}
+
+\item{elevation}{}
 }
 \description{
 This function calculates the unitless topographic shielding factor for a sampling site.

@@ -4,10 +4,10 @@
 \alias{TopoShieldFact}
 \title{Calculate topographic shielding factors}
 \usage{
-TopoShieldFact(radius)
+TopoShieldFact(radius = 10000)
 }
 \arguments{
-\item{radius}{Numeric. The radius around the sampling site (in metres) relevant for shielding factor calculation.}
+\item{radius}{Numeric. The radius around the sampling site (in metres) relevant for shielding factor calculation. Default to 10000 m.}
 }
 \description{
 This function allows for calculating topographic shielding factors for one or multiple sampling sites.

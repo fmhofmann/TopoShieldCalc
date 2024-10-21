@@ -4,10 +4,10 @@
 \alias{load_geodata}
 \title{Load geodata for topographic shielding factor calculation}
 \usage{
-load_geodata(radius)
+load_geodata(radius = 10000)
 }
 \arguments{
-\item{radius}{Numeric. The radius (in metres) around the sampling site relevant for shielding factor calculation.}
+\item{radius}{Numeric. The radius (in metres) around the sampling site relevant for shielding factor calculation. Default to 10000 metres.}
 }
 \description{
 This function allows for loading geodata (digital elevation model (DEM) and shapefile) for topographic shielding factor calculation.
