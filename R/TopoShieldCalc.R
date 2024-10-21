@@ -306,7 +306,7 @@ shielding_factor = function(point,
 
 #' Calculate topographic shielding factors
 #' 
-#' This function allows for calculating topographic shielding factors for one or multiple sampling sites.
+#' This function allows for calculating topographic shielding factors for a sampling site.
 #' @param radius Numeric. The radius around the sampling site (in metres) relevant for shielding factor calculation. Default to 10000 m. 
 #' @details
 #' This function requires a shapefile (.shp) with the sampling sites and a digital elevation model (DEM; .tif)
@@ -340,7 +340,7 @@ TopoShieldFact = function(radius = 10000){ # Numeric. Radius around the point.
   load_geodata(radius = radius) # Load the DEM and the shapefile
   for (i in 1:length(points$Name)){ # Length: number of points
     point = points[i,] # Subset the point
-    point_xyz(dem = dem_2,
+    point_xyz(dem = dem,
               point = point,
               boulder_height = point$BouldHt) # Determine x-, y-, and z-coordinates
     azimuth_elevation_horizon(dem = dem,
