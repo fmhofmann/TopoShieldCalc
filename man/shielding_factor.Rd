@@ -25,5 +25,5 @@ The unitless shielding factor is calculated in the same way as in Greg Balco's t
 shielding_factor(self_shielding_elevation = self_shielding_elevation, elevation  = elevation)
 }
 \author{
-Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com})
+Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 }

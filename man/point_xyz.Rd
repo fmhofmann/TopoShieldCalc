@@ -26,5 +26,5 @@ The \emph{x}-, \emph{y}-, and \emph{z}-coordinates of the sampling site (vectors
 point_xyz(dem, point, boulder_height = 0.3)
 }
 \author{
-Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com})
+Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 }

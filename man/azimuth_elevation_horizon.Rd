@@ -51,5 +51,5 @@ Note that the exported shapefile is an "ESRI shapefile" which can be opened with
 point_xyz(dem, point_x = 414416.5, point_y = 5316445.8, point_z = 279, radius = 10000, plot = TRUE)
 }
 \author{
-Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com})
+Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 }

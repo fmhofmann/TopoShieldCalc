@@ -41,5 +41,5 @@ This spreadsheet contains to columns entitled "Sampling site" and "Topographic s
 TopoShieldFact(radius = 10000)
 }
 \author{
-Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com})
+Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 }

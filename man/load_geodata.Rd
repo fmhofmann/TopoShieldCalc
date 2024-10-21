@@ -40,5 +40,5 @@ For this step, the \code{\link[terra:rast]{terra::rast()}} and \code{\link[terra
 load_geodata(radius = 10000)
 }
 \author{
-Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com})
+Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 }

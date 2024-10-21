@@ -24,5 +24,5 @@ It adds two vectors to the global environment: self_shielding_azimuth and self_s
 self_shield(strike = 20, dip = 40, plot = TRUE)
 }
 \author{
-Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com})
+Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@gmail.com} and Stefan Hergarten, University of Freiburg)
 }
