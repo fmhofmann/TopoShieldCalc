@@ -255,6 +255,7 @@ self_shield = function(strike, # Numeric. Strike of the sampling surface
 #' Calculate the topographic shielding factor
 #' 
 #' This function calculates the unitless topographic shielding factor for a sampling site.
+#' @param point Shapefile of the sampling site (object of class "SpatVect, see [terra::SpatVector]).
 #' @param self_shielding_elevation A vector with elevation angles for each azimuth (1:360). Can be generated with [TopoShieldCalc::self_shield]
 #' @param elevation 
 #' @details 
@@ -265,7 +266,8 @@ self_shield = function(strike, # Numeric. Strike of the sampling surface
 #' shielding_factor(self_shielding_elevation = self_shielding_elevation, elevation  = elevation)
 #' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com})
 #' @export
-shielding_factor = function(self_shielding_elevation,
+shielding_factor = function(point, 
+                            self_shielding_elevation,
                             elevation){
   elevation_final = pmax(elevation, # Select the larger elevation value for each azimuth
                          self_shielding_elevation)
@@ -350,7 +352,8 @@ TopoShieldFact = function(radius = 10000){ # Numeric. Radius around the point.
                               radius = radius)
     self_shield(strike = point$Strike_deg,
                 dip = point$Dip_deg)
-    shielding_factor(self_shielding_elevation = self_shielding_elevation,
+    shielding_factor(point = point,
+                     self_shielding_elevation = self_shielding_elevation,
                      elevation = elevation)
     if(i == 1){ # During the first iteration
       ShieldFact = shielding_fact

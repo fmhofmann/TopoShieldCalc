@@ -4,9 +4,11 @@
 \alias{shielding_factor}
 \title{Calculate the topographic shielding factor}
 \usage{
-shielding_factor(self_shielding_elevation, elevation)
+shielding_factor(point, self_shielding_elevation, elevation)
 }
 \arguments{
+\item{point}{Shapefile of the sampling site (object of class "SpatVect, see \link[terra:SpatVector-class]{terra::SpatVector}).}
+
 \item{self_shielding_elevation}{A vector with elevation angles for each azimuth (1:360). Can be generated with \link{self_shield}}
 
 \item{elevation}{}

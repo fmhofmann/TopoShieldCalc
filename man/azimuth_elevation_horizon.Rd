@@ -6,6 +6,7 @@
 \usage{
 azimuth_elevation_horizon(
   dem,
+  point,
   point_x,
   point_y,
   point_z,
@@ -15,6 +16,8 @@ azimuth_elevation_horizon(
 }
 \arguments{
 \item{dem}{The DEM (object of class "SpatRaster", see \link[terra:SpatRaster-class]{terra::SpatRaster} for further details).}
+
+\item{point}{Shapefile of the sampling site (object of class "SpatVect, see \link[terra:SpatVector-class]{terra::SpatVector}).}
 
 \item{point_x}{Numeric. The \emph{x}-coordinate of the sampling site.}
 
