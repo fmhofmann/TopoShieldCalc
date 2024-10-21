@@ -141,10 +141,10 @@ azimuth_elevation_horizon = function(dem,
                  by = resolution_raster)
   for (azimuth in 1:360){
     if (azimuth == 1){
-      coord_x = radius_2 * sin(azimuth * 2 * pi / 360) + point_x
+      coord_x = radius_2 * cos(azimuth * 2 * pi / 360) + point_x
       coord_y = radius_2 * sin(azimuth * 2 * pi / 360) + point_y
     } else {
-      coord_x = append(coord_x, radius_2 * sin(azimuth * 2 * pi / 360) + point_x)
+      coord_x = append(coord_x, radius_2 * cos(azimuth * 2 * pi / 360) + point_x)
       coord_y = append(coord_y, radius_2 * sin(azimuth * 2 * pi / 360) + point_x)
     }
   }
