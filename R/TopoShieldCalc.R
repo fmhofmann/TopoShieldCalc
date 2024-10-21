@@ -133,7 +133,6 @@ azimuth_elevation_horizon = function(dem,
                     geom[3] + radius + 200,
                     geom[4] - radius - 200,
                     geom[4] + radius + 200) # Create a mask 
-  
   dem_2 = terra::crop(dem,
                       mask,
                       touches = TRUE) # Crop dem
