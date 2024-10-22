@@ -128,62 +128,36 @@ azimuth_elevation_horizon = function(dem,
                                      point_z,
                                      radius = 10000,
                                      plot = FALSE){
-  mask = terra::ext(point_x - (radius + 200), 
-                    point_x + (radius + 200),
-                    point_y - (radius + 200),
-                    point_y + (radius + 200)) # Create a mask 
-  dem_2 = terra::crop(dem,
-                      mask,
-                      touches = TRUE) # Crop dem
-  resolution_raster = terra::res(dem_2)[1] # Determine the xy-resolution of the DEM
+  resolution_raster = terra::res(dem)[1] # Determine the xy-resolution of the DEM
   radius_2 = seq(from = resolution_raster, 
                  to = radius, 
                  by = resolution_raster)
-  for (azimuth in 1:360){
-    if (i == 1){
-      coord_x = radius_2 * cos(azimuth * 2 * pi / 360) + point_x
-      coord_y = radius_2 * sin(azimuth * 2 * pi / 360) + point_y
-    } else {
-      coord_x = append(coord_x, radius_2 * cos(azimuth * 2 * pi / 360) + point_x)
-      coord_y = append(coord_y, radius_2 * sin(azimuth * 2 * pi / 360) + point_x)
-    }
-  }
-  coord_z = terra::extract(dem_2, 
-                           data.frame(coord_x, coord_y), 
+  azimuth = 1:360
+  coord_x = matrix(radius_2, ncol = 1) %*% matrix(sin(azimuth * 2 * pi / 360), nrow = 1) + point_x
+  coord_y = matrix(radius_2, ncol = 1) %*% matrix(cos(azimuth * 2 * pi / 360), nrow = 1) + point_y
+  mask = terra::ext(point_x - (radius + 200),
+                    point_x + (radius + 200),
+                    point_y - (radius + 200),
+                    point_y + (radius + 200))
+  dem_2 = terra::crop(dem,
+                      mask,
+                      touches = TRUE)
+  extract = terra::extract(dem_2,
+                           data.frame(as.vector(coord_x), 
+                                      as.vector(coord_y)), 
                            method = "bilinear", 
-                           xy = TRUE,
                            ID = FALSE)
-  slope = (coord_z[,1] - point_z) / sqrt((coord_x - point_x)^2 + (coord_y - point_y)^2) # Slope is defined as: change in elevation / distance
-  elevation_angle = atan(slope) / pi * 180
-  matrix_elevation = matrix(data = elevation_angle, nrow = 10000)
-  
-  
-  
-  matrix_elevation = matrix(ncol = 360,
-                            nrow = length(radius_2))
-  matrix_elevation = (atan(slope) / pi * 180, ncol = 360, nrow = length(radius_2))
-  matrix_x_coord = matrix(ncol = 360,
-                          nrow = length(radius_2))
-  matrix_x_coord = matrix(ncol = 360,
-                          nrow = length(radius_2))
-  for (azimuth in 1:360){
-    
-
-                          
-                          
-  elevation_values = NA
-  elevation = NA
-  skyline_x = NA
-  skyline_y = NA
-  for (azimuth in 1:360){
-    elevation_values = matrix_elevation[,azimuth]
-    index = which.max(elevation_values)
-    elevation[azimuth] = elevation_values[index]
-    x_coord = matrix_x_coord[,azimuth]
-    y_coord = matrix_y_coord[,azimuth]
-    skyline_x[azimuth] = x_coord[index]
-    skyline_x[azimuth] = y_coord[index]
-  }
+  coord_z = matrix(extract[,1], 
+                   nrow = nrow(coord_x), 
+                   ncol = ncol(coord_x))
+  slope = (coord_z - point_z) / sqrt((coord_x - point_x)^2 + (coord_y - point_y)^2) # Slope is defined as: change in elevation / distance
+  index = apply(slope, 
+                2, 
+                which.max)
+  maxslope = slope[cbind(index,1:360)]
+  elevation = atan(maxslope) / pi * 180
+  skyline_x = coord_x[cbind(index, 1:360)]
+  skyline_y = coord_y[cbind(index, 1:360)]
   skyline = terra::vect(cbind(id = 1, 
                               part = 1, 
                               skyline_x, 
