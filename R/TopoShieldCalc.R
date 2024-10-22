@@ -40,7 +40,7 @@ load_geodata = function(radius = 10000){
   points = terra::vect(file.choose()) # Load the shapefile
   if (terra::linearUnits(points) == 0){
     stop("The linear unit of the coordinate reference system of the input-shapefile needs to be metres")
-  } else {}
+  }
   colnames = colnames(terra::as.data.frame(points)) # Retrieve the column names
   if ("Name" %in% colnames & "Strike_deg" %in% colnames & "Dip_deg" %in% colnames & "BouldHt" %in% colnames){ # Check if all columns exist
     message("The attribute table of the input-shapefile contains all necessary columns for shielding factor calculation")
@@ -51,13 +51,13 @@ load_geodata = function(radius = 10000){
   dem = terra::rast(file.choose()) # Load the dem
   if(terra::linearUnits(dem) == 0){
     stop("The linear unit of the input-DEM must be metres")
-  } else {}
+  }
   if (terra::crs(points, proj = TRUE) != terra::crs(dem, proj = TRUE)){
     stop("The input-DEM and the input-shapefile do not have the same coordinate reference system")
-  } else {}
+  }
   if(terra::xmin(points) - radius - 500 < terra::xmin(dem) || terra::xmax(points) + radius + 500 > terra::xmax(dem) || terra::ymin(points) - radius - 500 < terra::ymin(dem) || terra::ymax(points) + radius + 500 > terra::ymax(dem)){ # Checks if dem covers the whole area relevant for shielding factor calculation
     stop("The DEM does not cover the whole area relevant for shielding factor calculation")
-  } else {}  
+  }  
   message("The input-shapefile and the input-DEM fulfil all requirements")
   list = list(dem = dem, points = points)
   return(list2env(list, envir = globalenv()))
@@ -335,7 +335,7 @@ TopoShieldFact = function(radius = 10000){ # Numeric. Radius around the point.
         readODS::write_ods(ShieldFact_all,
                            path = "Shielding.ods")
         message(paste("Shielding factors for ",i," sampling sites successfully calculated", sep = ""))
-      } else {}
+      }
     } else { # During the subsequent iterations
       if(i < length(points$Name)){
         ShieldFact = append(ShieldFact,shielding_fact)
