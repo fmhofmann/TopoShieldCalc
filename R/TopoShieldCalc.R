@@ -141,10 +141,10 @@ azimuth_elevation_horizon = function(dem,
                  by = resolution_raster)
   for (azimuth in 1:360){
     if (azimuth == 1){
-      coord_x = radius_2 * sin(azimuth * 2 * pi / 360) + point_x
+      coord_x = radius_2 * cos(azimuth * 2 * pi / 360) + point_x
       coord_y = radius_2 * sin(azimuth * 2 * pi / 360) + point_y
     } else {
-      coord_x = append(coord_x, radius_2 * sin(azimuth * 2 * pi / 360) + point_x)
+      coord_x = append(coord_x, radius_2 * cos(azimuth * 2 * pi / 360) + point_x)
       coord_y = append(coord_y, radius_2 * sin(azimuth * 2 * pi / 360) + point_x)
     }
   }
@@ -154,27 +154,35 @@ azimuth_elevation_horizon = function(dem,
                            xy = TRUE,
                            ID = FALSE)
   slope = (coord_z[,1] - point_z) / sqrt((coord_x - point_x)^2 + (coord_y - point_y)^2) # Slope is defined as: change in elevation / distance
+  matrix_elevation = matrix((atan(slope)) / pi * 180,
+                            byrow = FALSE,
+                            ncol = 360,
+                            nrow = length(radius_2))
+  matrix_x_coord = matrix(coord_x,
+                          byrow = FALSE,
+                          ncol = 360,
+                          nrow = length(radius_2))
+  matrix_y_coord = matrix(coord_y,
+                          byrow = FALSE,
+                          ncol = 360,
+                          nrow = length(radius_2))
+  elevation_values = NA
   elevation = NA
   skyline_x = NA
   skyline_y = NA
-  index = NA
-  azimuth = 1
   for (azimuth in 1:360){
-    if (azimuth == 1){
-      slope_max = which.max(slope[azimuth: azimuth + radius]) 
-      elevation[azimuth] = (atan(slope[index])) / pi * 180
-      skyline_x[azimuth] = coord_x[index]
-      skyline_y[azimuth] = coord_y[index]
-      index = 10000 
-    } else {
-      slope_max = which.max(slope[index + azimuth:index + radius]) 
-      elevation[azimuth] = (atan(slope[index])) / pi * 180
-      skyline_x[azimuth] = coord_x[index]
-      skyline_y[azimuth] = coord_y[index]
-      index = index + radius
-    }
+    elevation_values = matrix_elevation[,azimuth]
+    index = which.max(elevation_values)
+    elevation[azimuth] = elevation_values[index]
+    x_coord = matrix_x_coord[,azimuth]
+    y_coord = matrix_y_coord[,azimuth]
+    skyline_x[azimuth] = x_coord[index]
+    skyline_x[azimuth] = y_coord[index]
   }
-  skyline = terra::vect(cbind(id = 1, part = 1, skyline_x, skyline_y), # Create a SpatVector with the skyline (polygon)
+  skyline = terra::vect(cbind(id = 1, 
+                              part = 1, 
+                              skyline_x, 
+                              skyline_y), # Create a SpatVector with the skyline (polygon)
                         type = "polygons", 
                         crs = terra::crs(dem_2))
   terra::writeVector(skyline, # Export the skyline as ESRI shapefile
