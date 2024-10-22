@@ -139,6 +139,7 @@ azimuth_elevation_horizon = function(dem,
   radius_2 = seq(from = resolution_raster, 
                  to = radius, 
                  by = resolution_raster)
+  azimuth = 1
   for (azimuth in 1:360){
     if (azimuth == 1){
       coord_x = radius_2 * cos(azimuth * 2 * pi / 360) + point_x
@@ -154,18 +155,23 @@ azimuth_elevation_horizon = function(dem,
                            xy = TRUE,
                            ID = FALSE)
   slope = (coord_z[,1] - point_z) / sqrt((coord_x - point_x)^2 + (coord_y - point_y)^2) # Slope is defined as: change in elevation / distance
-  matrix_elevation = matrix((atan(slope)) / pi * 180,
-                            byrow = FALSE,
-                            ncol = 360,
+  elevation_angle = atan(slope) / pi * 180
+  matrix_elevation = matrix(data = elevation_angle, nrow = 10000)
+  
+  
+  
+  matrix_elevation = matrix(ncol = 360,
                             nrow = length(radius_2))
-  matrix_x_coord = matrix(coord_x,
-                          byrow = FALSE,
-                          ncol = 360,
+  matrix_elevation = (atan(slope) / pi * 180, ncol = 360, nrow = length(radius_2))
+  matrix_x_coord = matrix(ncol = 360,
                           nrow = length(radius_2))
-  matrix_y_coord = matrix(coord_y,
-                          byrow = FALSE,
-                          ncol = 360,
+  matrix_x_coord = matrix(ncol = 360,
                           nrow = length(radius_2))
+  for (azimuth in 1:360){
+    
+
+                          
+                          
   elevation_values = NA
   elevation = NA
   skyline_x = NA
