@@ -139,9 +139,8 @@ azimuth_elevation_horizon = function(dem,
   radius_2 = seq(from = resolution_raster, 
                  to = radius, 
                  by = resolution_raster)
-  azimuth = 1
   for (azimuth in 1:360){
-    if (azimuth == 1){
+    if (i == 1){
       coord_x = radius_2 * cos(azimuth * 2 * pi / 360) + point_x
       coord_y = radius_2 * sin(azimuth * 2 * pi / 360) + point_y
     } else {
