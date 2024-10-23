@@ -29,4 +29,15 @@ Make sure that the `terra` and `readODS`packages are installed.
 ```
 library(TopoShieldCalc)
 ```
-Now you should be able to use the package.
+Now you should be able to use the package. Have fun and enjoy!
+
+## Preparation of the input-ESRI shapefile 
+
+The attribute table of the ESRI shapefile has to be structured as follows:
+
+Name                      | Strike_deg                       | Dip_deg                         | BouldHt                      |
+--------------------------|----------------------------------|---------------------------------|------------------------------|
+Name of the sampling site | The strike in degrees from north | The dip of the sampling surface | The boulder height in metres |
+
+
+
