@@ -44,3 +44,5 @@ Example:
 Name   | Strike_deg | Dip_deg | BouldHt |
 -------|------------|---------|---------|
 FS-01a | 210        | 5       | 1       |
+
+If the attribute table contains these columns, the function should work correctly.
