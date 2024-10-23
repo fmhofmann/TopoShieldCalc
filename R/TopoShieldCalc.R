@@ -172,6 +172,11 @@ azimuth_elevation_horizon = function(dem,
     terra::plot(dem_2)
     terra::polys(skyline, col = NA, border = "red") # Visualise the results
   }
+  if (length(elevation[elevation < 0]) > 0){ # If there are elevation values lower than zero, replace them with zero.
+    replace(elevation,
+            elevation < 0,
+            0)
+  }
   list = list(elevation = elevation)
   return(list2env(list, envir = globalenv())) # Return the vectors to the global environment
 }
