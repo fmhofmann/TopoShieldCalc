@@ -33,6 +33,8 @@ Now you should be able to use the package. Have fun and enjoy!
 
 ## Preparation of the input-ESRI shapefile 
 
+Note that the unit of the coordinate reference system (CRS) of the input-shapefile has to be metres. If this is not the case, the load_geodata() function will return an error message.
+
 The attribute table of the ESRI shapefile has to be structured as follows:
 
 Name                      | Strike_deg                       | Dip_deg                         | BouldHt                      |
