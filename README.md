@@ -39,5 +39,8 @@ Name                      | Strike_deg                       | Dip_deg          
 --------------------------|----------------------------------|---------------------------------|------------------------------|
 Name of the sampling site | The strike in degrees from north | The dip of the sampling surface | The boulder height in metres |
 
+Example:
 
-
+Name   | Strike_deg | Dip_deg | BouldHt |
+-------|------------|---------|---------|
+FS-01a | 210        | 5       | 1       |
