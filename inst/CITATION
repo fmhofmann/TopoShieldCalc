@@ -1,4 +1,5 @@
 bibentry(
+  bibtype = {"Manual"},
   title    = {"TopoShieldCalc. topographical shielding factor calculation for discrete sampling sites with the aid of a digital elevation model (DEM)"},
   author   =  {c(
     person("Felix Martin", "Hofmann", role = c("aut", "cre"), email = "fmhofmann9892@gmail.com", comment = c(ORCID = "0000-0002-9882-2613")), 
