@@ -170,7 +170,8 @@ azimuth_elevation_horizon = function(dem,
                      overwrite = TRUE)
   if(plot == TRUE){
     terra::plot(dem_2,
-                col = map.pal("oranges",255))
+                col = map.pal("oranges",255),
+                mar = c(3.1, 3.1, 2.1, 7.1))
     terra::polys(skyline, col = NA, border = "red") # Visualise the results
   }
   if (length(elevation[elevation < 0]) > 0){ # If there are elevation values lower than zero, replace them with zero.
