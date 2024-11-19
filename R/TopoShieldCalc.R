@@ -169,7 +169,8 @@ azimuth_elevation_horizon = function(dem,
                      filetype = "ESRI Shapefile",
                      overwrite = TRUE)
   if(plot == TRUE){
-    terra::plot(dem_2)
+    terra::plot(dem_2,
+                col = map.pal("oranges",255))
     terra::polys(skyline, col = NA, border = "red") # Visualise the results
   }
   if (length(elevation[elevation < 0]) > 0){ # If there are elevation values lower than zero, replace them with zero.
