@@ -1,6 +1,6 @@
 # TopoShieldCalc 
 
-<img align="right" width="250" src="man/Logo_TopoShieldCalc.png">
+<img align="right" width="250" src="man/Logo_TopoShieldCalc.jpg">
 
 <p align="right"; style="font-size:11px">logo by Felix Martin Hofmann</p>
 
