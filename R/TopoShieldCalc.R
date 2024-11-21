@@ -313,8 +313,8 @@ shielding_factor = function(point,
 #' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 #' @export
 TopoShieldFact = function(radius = 10000){ # Numeric. Radius around the point.
-  start_time = proc.time()
   load_geodata(radius = radius) # Load the DEM and the shapefile
+  start_time = proc.time()
   for (i in 1:length(points$Name)){ # Length: number of points
     point = points[i,] # Subset the point
     point_xyz(dem = dem,
