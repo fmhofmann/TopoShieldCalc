@@ -313,6 +313,7 @@ shielding_factor = function(point,
 #' @author Felix Martin Hofmann, University of Freiburg, Germany (\email{fmhofmann9892@@gmail.com} and Stefan Hergarten, University of Freiburg, Germany)
 #' @export
 TopoShieldFact = function(radius = 10000){ # Numeric. Radius around the point.
+  start_time = proc.time()
   load_geodata(radius = radius) # Load the DEM and the shapefile
   for (i in 1:length(points$Name)){ # Length: number of points
     point = points[i,] # Subset the point
@@ -360,4 +361,6 @@ TopoShieldFact = function(radius = 10000){ # Numeric. Radius around the point.
       }
     }
   }
+  end_time = proc.time() - start_time
+  message(paste("Processing time: ",as.numeric(end_time[3])," seconds", sep = ""))
 }
