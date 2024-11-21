@@ -1,4 +1,4 @@
-# TopoShieldCalc <img align="right" src="man/Logo_TopoShieldCalc.png" width="250">
+# TopoShieldCalc <img align="right" src="man/Logo_TopoShieldCalc.png" width="170">
 
 `TopoShieldCalc` is an *R* package for topographical shielding factor calculation for point-based topographic shielding factor calculation with the aid of a digital elevation model (DEM)
 ## Installation
