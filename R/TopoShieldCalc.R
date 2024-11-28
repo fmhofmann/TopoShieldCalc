@@ -88,7 +88,8 @@ point_xyz = function(dem, # SpatRaster. The cropped DEM
   point_z = terra::extract(dem, y = point, method = "bilinear")
   colnames(point_z) = c("ID","z") # Rename the columns in points_z
   point_z = as.numeric(point_z$z)
-  point_z = point_z + boulder_height
+  if (boulder_height > 0)
+    {point_z = point_z + boulder_height}
   list = list(point_x = point_x, point_y = point_y, point_z = point_z)
   return(list2env(list, envir = globalenv())) # Return the vectors to the global environment
 }
