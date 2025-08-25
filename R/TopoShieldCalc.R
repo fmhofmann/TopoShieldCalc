@@ -158,7 +158,7 @@ azimuth_elevation_horizon = function(dem,
   coord_z = matrix(extract[,1], 
                    nrow = nrow(coord_x), 
                    ncol = ncol(coord_x))
-  slope = (coord_z - point_z) / sqrt((coord_x - point_x)^2 + (coord_y - point_y)^2) # Slope is defined as: change in elevation / distance
+  slope = (coord_z - point_z) / sqrt((coord_x - point_x)^2 + (coord_y - point_y)^2) # Slope is defined as change in elevation / distance
   index = apply(slope, 
                 2, 
                 which.max)
