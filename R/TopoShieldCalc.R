@@ -128,12 +128,19 @@ azimuth_elevation_horizon = function(dem,
                                      point_y,
                                      point_z,
                                      radius = 10000,
+                                     delta_azimuth = 1,
+                                     radius_factor = 0.5,
                                      plot = FALSE){
   resolution_raster = terra::res(dem)[1] # Determine the xy-resolution of the DEM
-  radius_2 = seq(from = resolution_raster, 
-                 to = radius, 
-                 by = resolution_raster)
-  azimuth = 1:360
+  delta_length = radius_factor*delta_azimuth*pi/180
+  radius_low = radius_factor*resolution_raster*seq(from = 1,
+                                                   to = 1/delta_length)
+  n_high = log(radius/radius_low[length(radius_low)])/delta_length
+  radius_high = radius_low[length(radius_low)]*exp(seq(from = 1, to = n_high)*delta_length)
+  radius_2 = c(radius_low,radius_high)
+  azimuth = seq(from = delta_azimuth, to = 360, by = delta_azimuth) 
+  azimuth = azimuth*360/azimuth[length(azimuth)]
+  delta_azimuth = azimuth[1]
   coord_x = matrix(radius_2, ncol = 1) %*% matrix(sin(azimuth * 2 * pi / 360), nrow = 1) + point_x
   coord_y = matrix(radius_2, ncol = 1) %*% matrix(cos(azimuth * 2 * pi / 360), nrow = 1) + point_y
   mask = terra::ext(point_x - (radius + 200),
